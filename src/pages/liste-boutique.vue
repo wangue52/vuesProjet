@@ -1,6 +1,9 @@
 <script setup>
 import axios from '@/axios';
 import { computed, ref } from 'vue';
+import { useTheme } from 'vuetify';
+
+const { global } = useTheme()
 
 const stores = ref([]) ;
 const editedIndex = ref(-1) ;

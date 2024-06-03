@@ -17,12 +17,21 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
       :item="{
         title: 'Analytics',
         to: '/dashboard',
+        badgeClass: 'bg',
+
       }"
     />
     <VerticalNavLink
       :item="{
         title: 'ajouter un utilisateur',
         to: '/ajouter-user',
+      }"
+   />
+   <VerticalNavLink
+      :item="{
+        title: 'liste des utilisateur',
+        icon: 'ri-user-add-line',
+        to: '/liste-utilisateur',
       }"
    />
   </VerticalNavGroup>

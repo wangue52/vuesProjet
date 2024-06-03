@@ -1,12 +1,12 @@
 <script setup>
-import { useTheme } from 'vuetify'
+import axios from '@/axios'
 import AuthProvider from '@/views/pages/authentication/AuthProvider.vue'
 import logo from '@images/logo.svg?raw'
 import authV1MaskDark from '@images/pages/auth-v1-mask-dark.png'
 import authV1MaskLight from '@images/pages/auth-v1-mask-light.png'
 import authV1Tree2 from '@images/pages/auth-v1-tree-2.png'
 import authV1Tree from '@images/pages/auth-v1-tree.png'
-
+import { useTheme } from 'vuetify'
 const form = ref({
   email: '',
   password: '',
@@ -20,6 +20,24 @@ const authThemeMask = computed(() => {
 })
 
 const isPasswordVisible = ref(false)
+const login = async () => {
+try {
+  const res = axios.post('/auth/login',{
+    method: 'POST',
+      body: {
+        email: credentials.value.email,
+        password: credentials.value.password,
+      },
+      onResponseError({ response }) {
+        errors.value = response._data.errors
+      }
+  })
+
+ console.log('response >>>', res);
+ } catch (error) {
+  console.error(err)
+ }
+}
 </script>
 
 <template>
@@ -38,21 +56,21 @@ const isPasswordVisible = ref(false)
         </template>
 
         <VCardTitle class="font-weight-semibold text-2xl text-uppercase">
-          Materio
+          COMMUNE URBAINE DE NGAOUNDERE
         </VCardTitle>
       </VCardItem>
 
       <VCardText class="pt-2">
         <h5 class="text-h5 font-weight-semibold mb-1">
-          Welcome to Materio! 👋🏻
+          Welcome to NGAOUNDERE 3eme! 👋🏻
         </h5>
         <p class="mb-0">
-          Please sign-in to your account and start the adventure
+          connectez vous et debutons l'aventure
         </p>
       </VCardText>
 
       <VCardText>
-        <VForm @submit.prevent="() => {}">
+        <VForm @submit.prevent="login">
           <VRow>
             <!-- email -->
             <VCol cols="12">

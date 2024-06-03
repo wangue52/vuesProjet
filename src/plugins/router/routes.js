@@ -37,6 +37,10 @@ export const routes = [
         component: () => import('@/pages/ajouter-user.vue'),
       },
       {
+        path: 'liste-utilisateur',
+        component: () => import('@/pages/liste-utilisateur.vue'),
+      },
+      {
         path: 'liste-boutique',
         component: () => import('@/pages/liste-boutique.vue'),
       },
