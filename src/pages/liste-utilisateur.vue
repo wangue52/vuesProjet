@@ -64,12 +64,12 @@ const editItem = (item) => {
 };
 
 const deleteItem = async (item) => {
-  if (confirm(`Are you sure you want to delete ${item.name}?`)) {
+  if (confirm(`voulez vous vraiment supprimer Mr ${item.name}?`)) {
     try {
       await axios.delete(`/users/${item.id}`);
       fetchUsers(); // Refresh the list after deletion
     } catch (error) {
-      console.error('Error deleting user:', error);
+      console.error('Erreur lors de la suppression:', error);
     }
   }
 };
@@ -108,7 +108,7 @@ fetchUsers()
   <v-row>
     <v-col>
       <v-text-field v-model="search" label="Search" class="mb-4"></v-text-field>
-      <v-btn color="success" @click="showAddUserModal = true">Add User</v-btn>
+      <v-btn color="success" @click="showAddUserModal = true">ajouter un user</v-btn>
       <v-data-table :color="primary" :headers="headers" :items="userData" :search="search" >
         <template v-slot:item.username="{ item }">
           <v-avatar :src="item.avatar" size="32" class="mr-2">
@@ -125,10 +125,10 @@ fetchUsers()
         </template>
 
         <template v-slot:item.actions="{ item }">
-          <v-icon icon="mdi-close-circle" small class="mr-2" color="blue" @click="editItem(item)">
+          <v-icon :icon="mdi-close-circle" small class="mr-2" color="blue" @click="editItem(item)">
             edit  
           </v-icon>
-          <v-icon icon="delete" small color="red" @click="deleteItem(item)">
+          <v-icon :icon="delete" small color="red" @click="deleteItem(item)">
             mdi-delete
           </v-icon>
         </template>
@@ -221,3 +221,4 @@ fetchUsers()
   background-color: #f2f2f2;
 }
 </style>
+

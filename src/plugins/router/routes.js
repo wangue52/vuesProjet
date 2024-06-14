@@ -1,4 +1,7 @@
+
 export const routes = [
+
+
   { path: '/', redirect: '/dashboard' },
   {
     path: '/',
@@ -7,42 +10,45 @@ export const routes = [
       {
         path: 'dashboard',
         component: () => import('@/pages/dashboard.vue'),
+        
       },
       {
         path: 'account-settings',
         component: () => import('@/pages/account-settings.vue'),
+       
       },
       {
-        path: 'typography',
-        component: () => import('@/pages/typography.vue'),
+        path: 'nouvelle-lettre',
+        component: () => import('@/pages/nouvelle-lettre.vue'),
+       
       },
       {
-        path: 'icons',
-        component: () => import('@/pages/icons.vue'),
+        path: 'location',
+        component: () => import('@/pages/location.vue'),
+       
       },
       {
-        path: 'cards',
-        component: () => import('@/pages/cards.vue'),
-      },
-      {
-        path: 'tables',
-        component: () => import('@/pages/tables.vue'),
-      },
-      {
-        path: 'form-layouts',
-        component: () => import('@/pages/form-layouts.vue'),
+        path: 'bloc',
+        component: () => import('@/pages/bloc.vue'),
+       
       },
       {
         path: 'ajouter-user',
         component: () => import('@/pages/ajouter-user.vue'),
+       
       },
       {
         path: 'liste-utilisateur',
         component: () => import('@/pages/liste-utilisateur.vue'),
+      
       },
       {
         path: 'liste-boutique',
         component: () => import('@/pages/liste-boutique.vue'),
+      },
+      {
+        path: 'store-localisation',
+        component: () => import('@/pages/store-localisation.vue'),
       },
     ],
   },
@@ -65,3 +71,4 @@ export const routes = [
     ],
   },
 ]
+

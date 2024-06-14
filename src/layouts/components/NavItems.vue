@@ -15,7 +15,7 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
   >
     <VerticalNavLink
       :item="{
-        title: 'Analytics',
+        title: 'acceuil',
         to: '/dashboard',
         badgeClass: 'bg',
 
@@ -34,6 +34,13 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
         to: '/liste-utilisateur',
       }"
    />
+   <VerticalNavLink
+      :item="{
+        title: 'localisation',
+        icon: 'ri-search-2-line',
+        to: '/store-localisation',
+      }"
+   />
   </VerticalNavGroup>
 
   <!-- 👉 Apps & Pages -->
@@ -46,6 +53,13 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
     :item="{
      title: 'liste des boutiques',
         to: '/liste-boutique',
+      badgeClass: 'bg-light-primary text-primary',
+    }"
+  />
+  <VerticalNavLink
+    :item="{
+     title: 'gestion des blocs',
+        to: '/bloc',
       badgeClass: 'bg-light-primary text-primary',
     }"
   />
@@ -67,13 +81,6 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
   />
   <VerticalNavLink
     :item="{
-      title: 'Register',
-      icon: 'ri-user-add-line',
-      to: '/register',
-    }"
-  />
-  <VerticalNavLink
-    :item="{
       title: 'Error',
       icon: 'ri-information-line',
       to: '/no-existence',
@@ -88,97 +95,23 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
   />
   <VerticalNavLink
     :item="{
-      title: 'Typography',
+      title: 'nouvelle lettre',
       icon: 'ri-text',
-      to: '/typography',
+      to: '/nouvelle-lettre',
     }"
   />
   <VerticalNavLink
     :item="{
-      title: 'Icons',
-      icon: 'ri-remixicon-line',
-      to: '/icons',
+      title: 'location',
+      icon: 'ri-file-list-3-fill',
+      to: '/location',
     }"
   />
-  <VerticalNavLink
-    :item="{
-      title: 'Cards',
-      icon: 'ri-bar-chart-box-line',
-      to: '/cards',
-    }"
-  />
-
-  <!-- 👉 Forms & Tables -->
-  <VerticalNavSectionTitle
-    :item="{
-      heading: 'Forms & Tables',
-    }"
-  />
-  <VerticalNavLink
-    :item="{
-      title: 'Form Layouts',
-      icon: 'ri-layout-4-line',
-      to: '/form-layouts',
-    }"
-  />
-  <VerticalNavLink
-    :item="{
-      title: 'Form Validation',
-      icon: 'ri-checkbox-multiple-line',
-      href: 'https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/forms/form-validation',
-      target: '_blank',
-      badgeContent: 'Pro',
-      badgeClass: 'bg-light-primary text-primary',
-    }"
-  />
-  <VerticalNavLink
-    :item="{
-      title: 'Form Wizard',
-      icon: 'ri-git-commit-line',
-      href: 'https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/forms/form-wizard-numbered',
-      target: '_blank',
-      badgeContent: 'Pro',
-      badgeClass: 'bg-light-primary text-primary',
-    }"
-  />
-  <VerticalNavLink
-    :item="{
-      title: 'Tables',
-      icon: 'ri-table-alt-line',
-      to: '/tables',
-    }"
-  />
-
   <!-- 👉 Others -->
   <VerticalNavSectionTitle
     :item="{
-      heading: 'Others',
+      heading: 'autres',
     }"
   />
-  <VerticalNavLink
-    :item="{
-      title: 'Access Control',
-      icon: 'ri-shield-line',
-      href: 'https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/access-control',
-      target: '_blank',
-      badgeContent: 'Pro',
-      badgeClass: 'bg-light-primary text-primary',
-    }"
-  />
-  <VerticalNavLink
-    :item="{
-      title: 'Documentation',
-      icon: 'ri-article-line',
-      href: 'https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/documentation/',
-      target: '_blank',
-    }"
-  />
-  <VerticalNavLink
-    :item="{
-      title: 'Raise Support',
-      href: 'https://github.com/themeselection/materio-vuetify-vuejs-admin-template-free/issues',
-      icon: 'ri-lifebuoy-line',
-      target: '_blank',
-    }"
-  />
+
 </template>

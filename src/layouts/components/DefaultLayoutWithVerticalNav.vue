@@ -32,20 +32,11 @@ import VerticalNavLayout from '@layouts/components/VerticalNavLayout.vue'
 
           <span class="d-none d-md-flex align-center text-disabled">
             <span class="me-3">Search</span>
-            <span class="meta-key">&#8984;K</span>
+            <span class="meta-key"></span>
           </span>
         </div>
 
         <VSpacer />
-
-        <IconBtn
-          class="me-2"
-          href="https://github.com/themeselection/materio-vuetify-vuejs-admin-template-free"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <VIcon icon="ri-github-fill" />
-        </IconBtn>
 
         <IconBtn class="me-2">
           <VIcon icon="ri-notification-line" />

@@ -1,5 +1,5 @@
 <script setup>
-import avatar1 from '@images/avatars/avatar-1.png'
+import avatar1 from '@images/avatars/avatar-1.png';
 </script>
 
 <template>
@@ -64,7 +64,7 @@ import avatar1 from '@images/avatars/avatar-1.png'
               />
             </template>
 
-            <VListItemTitle>Profile</VListItemTitle>
+            <VListItemTitle>Profile </VListItemTitle>
           </VListItem>
 
           <!-- 👉 Settings -->
@@ -77,7 +77,7 @@ import avatar1 from '@images/avatars/avatar-1.png'
               />
             </template>
 
-            <VListItemTitle>Settings</VListItemTitle>
+            <VListItemTitle>parametre</VListItemTitle>
           </VListItem>
 
           <!-- 👉 Pricing -->
@@ -119,7 +119,7 @@ import avatar1 from '@images/avatars/avatar-1.png'
               />
             </template>
 
-            <VListItemTitle>Logout</VListItemTitle>
+            <VListItemTitle>deconnexion</VListItemTitle>
           </VListItem>
         </VList>
       </VMenu>
