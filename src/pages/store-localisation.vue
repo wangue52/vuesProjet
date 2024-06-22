@@ -169,7 +169,7 @@ export default {
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn text @click="showStoreDetails">
+                  <v-btn color="success" text @click="showStoreDetails">
                      Details
                   </v-btn>
                 </v-card-actions>

@@ -1,292 +1,208 @@
 <template>
-  <div>
-    <h1>gestion des location</h1>
-    <div v-if="isLoading">
-      Loading...
-    </div>
-    <div v-else>
-      <div>
-        <h2>location</h2>
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th>Client Name</th>
-              <th>Store Matricule</th>
-              <th>Store Name</th>
-              <th>Store Address</th>
-              <th>Period Location</th>
-              <th>Rental Date</th>
-              <th>Price</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="rental in rentals" :key="rental.id">
-              <td>{{ rental.client_name }}</td>
-              <td>{{ rental.store_matricule }}</td>
-              <td>{{ rental.store_name }}</td>
-              <td>{{ rental.store_address }}</td>
-              <td>{{ rental.period_location }}</td>
-              <td>{{ rental.rental_date }}</td>
-              <td>{{ rental.price_store }}</td>
-              <td>
-                <button @click="showRental(rental.id)" class="btn btn-info">
-                  View
-                </button>
-                <button @click="editRental(rental.id)" class="btn btn-warning">
-                  Editer
-                </button>
-                <button @click="deleteRental(rental.id)" class="btn btn-danger">
-                  supprimer
-                </button>
-                <button @click="generateQrCode(rental.id)" class="btn btn-success">
-                  Generer QR Code
-                </button>
-                <button @click="generatePdf(rental.id)" class="btn btn-primary">
-                  Generate PDF
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div v-if="showRentalModal">
-        <!-- Rental Details Modal -->
-        <div class="modal fade show" id="rentalDetailsModal" tabindex="-1" aria-modal="true" role="dialog" style="display: block;">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title">Rental Details</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="showRentalModal = false">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body">
-                <div class="form-group">
-                  <label for="client_name">Client Name:</label>
-                  <input type="text" class="form-control" id="client_name" v-model="rental.client_name" readonly>
-                </div>
-                <div class="form-group">
-                  <label for="store_matricule">Store Matricule:</label>
-                  <input type="text" class="form-control" id="store_matricule" v-model="rental.store_matricule" readonly>
-                </div>
-                <!-- Add other fields for details -->
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="showRentalModal = false">
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div v-if="showEditModal">
-        <!-- Edit Rental Modal -->
-        <div class="modal fade show" id="editRentalModal" tabindex="-1" aria-modal="true" role="dialog" style="display: block;">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title">Edit Rental</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="showEditModal = false">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body">
-                <form @submit.prevent="updateRental">
-                  <div class="form-group">
-                    <label for="client_name">Client Name:</label>
-                    <input type="text" class="form-control" id="client_name" v-model="rental.client_name">
-                  </div>
-                  <div class="form-group">
-                    <label for="store_matricule">Store Matricule:</label>
-                    <input type="text" class="form-control" id="store_matricule" v-model="rental.store_matricule">
-                  </div>
-                  <!-- Add other fields for editing -->
-                  <button type="submit" class="btn btn-primary">Save Changes</button>
-                </form>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="showEditModal = false">
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div v-if="showQrCodeModal">
-        <!-- QR Code Modal -->
-        <div class="modal fade show" id="qrCodeModal" tabindex="-1" aria-modal="true" role="dialog" style="display: block;">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title">QR Code</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="showQrCodeModal = false">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body">
-                <img :src="qrCodeUrl" alt="QR Code" width="200" height="200">
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="showQrCodeModal = false">
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div v-if="showPdfModal">
-        <!-- PDF Modal -->
-        <div class="modal fade show" id="pdfModal" tabindex="-1" aria-modal="true" role="dialog" style="display: block;">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title">PDF</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="showPdfModal = false">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body">
-                <iframe :src="pdfUrl" width="100%" height="500" frameborder="0"></iframe>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="showPdfModal = false">
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- Add Form to Create New Rentals -->
-      <div>
-        <h2>nouvelle location</h2>
-        <form @submit.prevent="createRental">
-          <div class="form-group">
-            <label for="client_name">Client Name:</label>
-            <input type="text" class="form-control" id="client_name" v-model="newRental.client_name" required>
-          </div>
-          <div class="form-group">
-            <label for="store_matricule">Store Matricule:</label>
-            <input type="text" class="form-control" id="store_matricule" v-model="newRental.store_matricule" required>
-          </div>
-          <!-- Add other fields for the new rental form -->
-          <button type="submit" class="btn btn-primary">Creer la boutique</button>
-        </form>
-      </div>
-    </div>
-  </div>
+  <v-app>
+    <v-main>
+      <v-container>
+        <v-card>
+          <v-card-title>Gestion des locations</v-card-title>
+          <v-card-title>
+            <v-form @submit.prevent="submitForm">
+              <v-text-field
+                v-model="form.client_name"
+                label="Nom du client"
+                required
+              ></v-text-field>
+              <v-text-field
+                v-model="form.store_matricule"
+                label="Numéro de matricule du magasin"
+               
+                required
+              ></v-text-field>
+              <v-select
+                v-model="form.store_id"
+                :items="storeNames"
+                item-title="name"
+                item-value="id"
+                label="Nom du magasin"
+                @change="fillStoreDetails"
+                required
+              ></v-select>
+              <v-text-field
+                v-model="form.store_address"
+                label="Adresse du magasin"
+                
+                required
+              ></v-text-field>
+              <v-text-field
+                v-model="form.period_location"
+                label="Période de location (en jours)"
+                type="number"
+                required
+              ></v-text-field>
+              <v-text-field
+                v-model="form.rental_date"
+                label="Date de location"
+                type="datetime-local"
+                required
+              ></v-text-field>
+              <v-text-field
+                v-model="form.price_store"
+                label="Prix de location"
+                type="number"
+                step="0.01"
+                required
+              ></v-text-field>
+              <v-btn color="primary" type="submit">Enregistrer</v-btn>
+            </v-form>
+          </v-card-title>
+        </v-card>
+
+        <v-card>
+          <v-card-title>Liste des locations</v-card-title>
+          <v-text-field v-model="search" label="Search" class="mb-4"></v-text-field>
+          <v-card-title>
+            <v-data-table :headers="headers" :items="rentals" :loading="loading" :search="search" >
+              <template v-slot:item.actions="{ item }">
+                <v-btn color="info" @click=" generatePDF(item.id)">PDF</v-btn>
+                <v-btn color="warning" @click="editRental(item.id)">Modifier</v-btn>
+                <v-btn color="error" @click="deleteRental(item.id)">Supprimer</v-btn>
+                <v-btn color="success" @click="generateQrCode(item.id)">QR Code</v-btn>
+              </template>
+            </v-data-table>
+          </v-card-title>
+        </v-card>
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
+
 <script>
 import axios from '@/axios';
+import { ref } from 'vue';
 export default {
   data() {
     return {
-      rentals: [],
-      isLoading: true,
-      newRental: {
+      form: {
         client_name: '',
         store_matricule: '',
-        // Add other fields for new rental
+        store_id: '',
+        store_address: '',
+        period_location: '',
+        rental_date: '',
+        price_store: '',
       },
-      rental: {},
-      showRentalModal: false,
-      showEditModal: false,
-      showQrCodeModal: false,
-      showPdfModal: false,
-      qrCodeUrl: '',
-      pdfUrl: ''
+      rentals: [],
+      stores: [],
+      storeNames: [],
+       search : ref(''),
+   showdetails : ref(false) ,
+      headers: [
+        { title: 'Nom du client', key: 'client_name' },
+        { title: 'Numéro de matricule', key: 'store_matricule' },
+        { title: 'Nom du magasin', key: 'store_name' },
+        { title: 'Adresse du magasin', key: 'store_address' },
+        { title: 'Période de location', key: 'period_location' },
+        { title: 'Date de location', key: 'rental_date' },
+        { title: 'Prix de location', key: 'price_store' },
+        { title: 'Actions', key: 'actions', sortable: false },
+      ],
+      loading: false,
     };
   },
-  mounted() {
+  created() {
     this.fetchRentals();
+    this.fetchStores();
   },
   methods: {
-    async fetchRentals() {
-      try {
-        const response = await axios.get('/rentals');
-        this.rentals = response.data.data;
-      } catch (error) {
-        console.error('Error fetching rentals:', error);
-      }
-    },
-    createRental() {
-    axios.post('/rentals', this.newRental)
+    fetchRentals() {
+      this.loading = true;
+      axios.get('/rentals')
         .then(response => {
-          this.rentals.push(response.data);
-          this.newRental = {
-            client_name: '',
-            store_matricule: '',
-            // Reset other fields
-          };
+          this.rentals = response.data;
+          this.loading = false;
         })
         .catch(error => {
-          console.error('Error creating rental:', error);
+          console.error('Erreur lors de la récupération des locations :', error);
+          this.loading = false;
+        });
+
+    },
+    fetchStores() {
+      axios.get('/stores?status=disponible')
+        .then(response => {
+          this.stores = response.data.data;
+          this.storeNames = this.stores.map(store => store.name);
+        })
+        .catch(error => {
+          console.error('Erreur lors de la récupération des magasins :', error);
+        })
+      },
+      fillStoreDetails() {
+      const selectedStore = this.stores.find(store => store.name === this.form.store_id);
+      if (selectedStore) {
+        this.form.store_matricule = selectedStore.matricule;
+        this.form.store_address = selectedStore.address;
+      }
+    },
+    submitForm() {
+      axios.post('/rentals', this.form)
+        .then(response => {
+          this.fetchRentals();
+          this.resetForm();
+        })
+        .catch(error => {
+          console.error('Erreur lors de l\'enregistrement de la location :', error);
         });
     },
     showRental(id) {
-      axios.get(`/api/rentals/${id}`)
+      axios.get(`/rentals/${id}`, this.form)
         .then(response => {
-          this.rental = response.data;
-          this.showRentalModal = true;
+          
         })
-        .catch(error => {
-          console.error('Error fetching rental details:', error);
-        });
     },
     editRental(id) {
-      axios.get(`/rentals/${id}`)
-        .then(response => {
-          this.rental = response.data;
-          this.showEditModal = true;
-        })
-        .catch(error => {
-          console.error('Error fetching rental details:', error);
-        });
+      this.$router.push({ name: 'rental.edit', params: { id } });
     },
-    updateRental() {
-      axios.put(`/rentals/${this.rental.id}`, this.rental)
+    deleteRental(rental_id) {
+      axios.delete(`/rentals/${rental_id}`)
         .then(response => {
-          // Update the corresponding rental in the rentals array
-          const index = this.rentals.findIndex(r => r.id === this.rental.id);
-          if (index !== -1) {
-            this.rentals[index] = response.data;
-          }
-          this.showEditModal = false;
+          this.fetchRentals();
         })
         .catch(error => {
-          console.error('Error updating rental:', error);
-        });
-    },
-    deleteRental(id) {
-      axios.delete(`/rentals/${id}`)
-        .then(response => {
-          // Remove the deleted rental from the rentals array
-          this.rentals = this.rentals.filter(r => r.id !== id);
-        })
-        .catch(error => {
-          console.error('Error deleting rental:', error);
+          console.error('Erreur lors de la suppression de la location :', error);
         });
     },
     generateQrCode(id) {
-      axios.get(`/rentals/${id}/qrcode`)
+      axios.get(`/rentals/qrcode/${id}`)
         .then(response => {
-          this.qrCodeUrl = response.data.qrcode_url;
-          this.showQrCodeModal = true;
+          // Afficher le QR Code à l'utilisateur
+          window.open(response.data.qrcode_url, '_blank');
         })
         .catch(error => {
-          console.error('Error generating QR Code:', error);
+          console.error('Erreur lors de la génération du QR Code :', error);
         });
     },
-    generatePdf(id) {
-      window.open(`/rentals/${id}/pdf`, '_blank'); // Open PDF in a new tab
-    }
-  }
+    generatePDF(id) {
+      axios.get(`/rentals/pdf/${id}`)
+        .then(response => {
+          // Afficher le QR Code à l'utilisateur
+          // window.open(response.data.qrcode_url, '_blank');
+        })
+        .catch(error => {
+          console.error('Erreur lors de la génération du PDF :', error);
+        });
+    },
+    resetForm() {
+      this.form = {
+        client_name: '',
+        store_matricule: '',
+        store_name: '',
+        store_address: '',
+        period_location: '',
+        rental_date: '',
+        price_store: '',
+      };
+    },
+  },
 };
 </script>
-<style scoped>
 
-</style>

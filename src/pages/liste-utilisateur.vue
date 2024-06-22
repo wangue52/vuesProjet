@@ -34,27 +34,11 @@ const headers = [
 const fetchUsers = async () => {
   try {
     const response = await axios.get('/users');
-    userData.value = response.data.data; // Assuming the API returns an array
+    userData.value = response.data.data;
+    // userData.avatar.value = userData.value.map(user => user.avatar);
   } catch (error) {
     console.error(error);
   }
-};
-const resolveUserRoleVariant = (type) => {
-  const variants = {
-    Admin: {
-      color: 'blue',
-      icon: 'mdi-account-supervisor',
-    },
-    Agent: {
-      color: 'green',
-      icon: 'mdi-account-hard-hat',
-    },
-    Receveur: {
-      color: 'purple',
-      icon: 'mdi-cash-multiple',
-    },
-  };
-  return variants[type] || {};
 };
 
 const editItem = (item) => {
@@ -116,20 +100,12 @@ fetchUsers()
           </v-avatar>
           {{ item.username }}
         </template>
-
-        <template v-slot:item.type="{ item }">
-          <v-icon :color="resolveUserRoleVariant(item.type).color">
-            {{ resolveUserRoleVariant(item.type).icon }}
-          </v-icon>
-          {{ item.type }}
-        </template>
-
         <template v-slot:item.actions="{ item }">
-          <v-icon :icon="mdi-close-circle" small class="mr-2" color="blue" @click="editItem(item)">
-            edit  
+          <v-icon  size="small" class="mr-2" color="blue" @click="editItem(item)">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83zM3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25zM5.92 19H5v-.92l9.06-9.06.92.92-9.06 9.06z"></path></svg>
           </v-icon>
-          <v-icon :icon="delete" small color="red" @click="deleteItem(item)">
-            mdi-delete
+          <v-icon size="small" color="red" @click="deleteItem(item)">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14V4zm-6 7h-2v7h2V11zm-4 0H7v7h2V11zm8 0h-2v7h2V11zm2-8H5v3h14V3z"></path></svg>
           </v-icon>
         </template>
       </v-data-table>

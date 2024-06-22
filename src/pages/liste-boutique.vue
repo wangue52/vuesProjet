@@ -4,7 +4,7 @@ import { computed, ref } from 'vue';
 import { useTheme } from 'vuetify';
 
 const { global } = useTheme()
-
+const search = ref('');
 const stores = ref([]) ;
 const editedIndex = ref(-1) ;
 const editedItem = ref({
@@ -122,10 +122,12 @@ const save = () => {
     :headers="headers"
     :items="stores"
     :sort-by="[{ key: 'name', order: 'asc' }]"
+    :search="search"
   >
     <template v-slot:top>
       <v-toolbar flat>
         <v-toolbar-title>liste des commerce </v-toolbar-title>
+        <v-text-field v-model="search" label="Search" class="mb-4"></v-text-field>
         <v-divider class="mx-4" inset vertical></v-divider>
         <v-spacer></v-spacer>
         <v-dialog v-model="dialog" max-width="500px">
@@ -140,7 +142,7 @@ const save = () => {
             </v-card-title>
 
             <v-card-text>
-              <v-container>
+              <v-container >
                 <v-row>
                     <v-col cols="12" md="4" sm="6">
                     <v-text-field v-model="editedItem.id" label="id"></v-text-field>

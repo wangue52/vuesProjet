@@ -1,5 +1,13 @@
 <script setup>
 import avatar1 from '@images/avatars/avatar-1.png';
+import { useRoute, useRouter } from 'vue-router';
+const router = useRouter();
+const route = useRoute();
+
+const logout=()=>{
+  localStorage.removeItem('token')
+  router.push({name:'login'})
+}
 </script>
 
 <template>
@@ -110,7 +118,7 @@ import avatar1 from '@images/avatars/avatar-1.png';
           <VDivider class="my-2" />
 
           <!-- 👉 Logout -->
-          <VListItem to="/login">
+          <VListItem @click="logout">
             <template #prepend>
               <VIcon
                 class="me-2"

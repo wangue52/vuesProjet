@@ -25,7 +25,7 @@
         </tr>
       </tbody>
     </table>
-    <!-- Create Bloc Modal -->
+    <!-- Create Bloc Modal
     <div class="modal fade" id="createBlocModal" :class="{ show: showCreateModal }" tabindex="-1" aria-labelledby="createBlocModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -48,9 +48,9 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
     <!-- Edit Bloc Modal -->
-    <div class="modal fade" id="editBlocModal" :class="{ show: showEditModal }" tabindex="-1" aria-labelledby="editBlocModalLabel" aria-hidden="true">
+    <!-- <div class="modal fade" id="editBlocModal" :class="{ show: showEditModal }" tabindex="-1" aria-labelledby="editBlocModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -72,7 +72,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 <script>

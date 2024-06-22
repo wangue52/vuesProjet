@@ -47,60 +47,65 @@ const login = async () => {
 }
 </script> -->
 <template>
-  <div class="login-container d-flex justify-content-center align-items-center vh-100">
-    <div class="card shadow rounded-3 p-5">
-      <div class="logo mb-4">
-        <img src="@images/logo.png" alt="logo" />
-      </div>
-
-      <h3 class="text-center mb-4">GESCOM</h3>
-
-      <form @submit.prevent="login">
-        <div class="form-group mb-3">
-          <label for="email" class="form-label fw-bold">adresse email</label>
-          <input
-            type="email"
-            class="form-control"
-            id="email"
-            v-model="form.email"
-            required
-          />
-        </div>
-
-        <div class="form-group mb-3 password-field">
-          <label for="password" class="form-label fw-bold">Password</label>
-          <div class="input-group">
-            <input
-              type="password"
-              class="form-control"
-              id="password"
-              v-model="form.password"
-              required
-              :class="{ 'is-visible': isPasswordVisible }"
-            />
-            <span class="input-group-text password-toggle" @click="isPasswordVisible = !isPasswordVisible">
-              <i v-if="isPasswordVisible" class="fas fa-eye-slash"></i>
-              <i v-else class="fas fa-eye"></i>
-            </span>
+  <div class="login-container d-flex vh-100">
+    <div class="container-fluid d-flex justify-content-center align-items-center h-100">
+      <div class="row">
+        <div class="col-lg-6 d-flex justify-content-center align-items-center">
+          <div class="card shadow rounded-3 p-5">
+            <div class="logo mb-4">
+              <img src="@images/logo.png" alt="logo" />
+            </div>
+            <h3 class="text-center mb-4">GESCOM</h3>
+            <form @submit.prevent="login">
+              <div class="form-group mb-3">
+                <label for="email" class="form-label fw-bold">adresse email</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  id="email"
+                  v-model="form.email"
+                  required
+                />
+              </div>
+              <div class="form-group mb-3 password-field">
+                <label for="password" class="form-label fw-bold">Password</label>
+                <div class="input-group">
+                  <input
+                    type="password"
+                    class="form-control"
+                    id="password"
+                    v-model="form.password"
+                    required
+                    :class="{ 'is-visible': isPasswordVisible }"
+                  />
+                  <span class="input-group-text password-toggle" @click="isPasswordVisible = !isPasswordVisible">
+                    <i v-if="isPasswordVisible" class="fas fa-eye-slash"></i>
+                    <i v-else class="fas fa-eye"></i>
+                  </span>
+                </div>
+                <small class="text-muted">au moins 9 caracteres requis.</small>
+              </div>
+              <div class="form-check mb-3">
+                <input
+                  type="checkbox"
+                  class="form-check-input"
+                  id="remember"
+                  v-model="form.remember"
+                />
+                <label class="form-check-label" for="remember">se souvenir de moi</label>
+              </div>
+              <button type="submit" @click="authenticate" class="btn btn-primary w-100">Login</button>
+            </form>
+            <div v-if="error" class="alert alert-danger mt-3" role="alert">
+              {{ error }}
+            </div>
           </div>
-          <small class="text-muted">au moins  9 caracteres requis.</small>
         </div>
-
-        <div class="form-check mb-3">
-          <input
-            type="checkbox"
-            class="form-check-input"
-            id="remember"
-            v-model="form.remember"
-          />
-          <label class="form-check-label" for="remember">se souvenir de moi</label>
+        <div class="col-lg-6 d-flex justify-content-center align-items-center">
+          <div class="bg-light rounded-3 p-5">
+            <img src="@images/logo.png" alt="Header Image" class="img-fluid">
+          </div>
         </div>
-
-        <button type="submit" class="btn btn-primary w-100">Login</button>
-      </form>
-
-      <div v-if="error" class="alert alert-danger mt-3" role="alert">
-        {{ error }}
       </div>
     </div>
   </div>
@@ -138,8 +143,11 @@ const login = async () => {
     cookies.set('accessToken', accessToken);
     cookies.set('token_type', token_type); 
     cookies.set('type', type);
+    const authenticate=()=>{
+      localStorage.setItem('token',accessToken)};
     if (type === 'receveur') {
-      const redirectTo = route.query.to || '/'; 
+      const redirectTo = route.query.to || '/dashboard';
+      authenticate();
        await router.replace(redirectTo);
     } else {
       await router.replace(route.query.to || '/liste-boutique'); 
@@ -172,40 +180,40 @@ if (header) {
     error.value = null;
   }
 };
+
 </script>
 <style scoped>
 .login-container {
-  background-color: #f0f2f5; /* Light background for better contrast */
+  background-color: #f2f2f2;
 }
-
 .card {
-  border: none; /* Remove default border */
+  background-color: #fff;
+  border: none;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  width: 350px;
 }
-
+.logo {
+  text-align: center;
+}
 .logo img {
-  max-width: 150px; /* Adjust logo size as needed */
+  width: 100px;
 }
-
-.form-group {
-  margin-bottom: 1.5rem; /* Consistent spacing */
+.password-field {
+  position: relative;
 }
-
-.form-label {
-  color: #333; /* Darker text for better readability */
+.password-toggle {
+  cursor: pointer;
 }
-
-.password-field small {
-  display: block;
-  margin-top: 0.5rem;
-  color: #868e96; /* Light, informative text */
+.is-visible {
+  border-bottom: 1px solid #ddd;
 }
-
-.btn-primary {
-  background-color: #007bff; /* Brand-specific blue */
-  border-color: #007bff; /* Match button color */
+.input-group-text {
+  border-left: none;
+  border-radius: 0 5px 5px 0;
+}
+.bg-light {
+  background-color: #f8f9fa;
+  border-radius: 0 0 0 30px;
+  width: 350px;
 }
 </style>
-
-
-
-

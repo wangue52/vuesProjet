@@ -1,190 +1,208 @@
 <template>
-  <div class="container">
-    <div class="row">
-      <div class="col-12">
-        <h1 class="mb-4">Nouvelle Lettre</h1>
-        <form @submit="generateLetter">
-          <div class="form-group">
-            <label for="recipientName">Recipient Name</label>
-            <input
-              type="text"
-              name="recipientName"
-              id="recipientName"
-              class="form-control"
-              v-model="formData.recipientName"
-              required
-            />
-          </div>
-          <div class="form-group">
-            <label for="recipientAddress">Recipient Address</label>
-            <input
-              type="text"
-              name="recipientAddress"
-              id="recipientAddress"
-              class="form-control"
-              v-model="formData.recipientAddress"
-              required
-            />
-          </div>
-          <div class="form-group">
-            <label for="senderName">Sender Name</label>
-            <input
-              type="text"
-              name="senderName"
-              id="senderName"
-              class="form-control"
-              v-model="formData.senderName"
-              required
-            />
-          </div>
-          <div class="form-group">
-            <label for="senderAddress">Sender Address</label>
-            <input
-              type="text"
-              name="senderAddress"
-              id="senderAddress"
-              class="form-control"
-              v-model="formData.senderAddress"
-              required
-            />
-          </div>
-          <div class="form-group">
-            <label for="letterContent">Letter Content</label>
-            <textarea
-              name="letterContent"
-              id="letterContent"
-              class="form-control"
-              v-model="formData.letterContent"
-              required
-            ></textarea>
-          </div>
-          <button type="submit" class="btn btn-primary">Generate Letter</button>
-        </form>
-        <div v-if="generatedLetter" class="mt-4 letter-container" ref="letterContainer">
-          <h2>Lettre</h2>
-          <p>{{ generatedLetter }}</p>
-          <div class="text-right">
-            <button class="btn btn-primary mr-2" @click="saveAsPDF">Save as PDF</button>
-            <button class="btn btn-success" @click="archiveLetter">Archive</button>
-          </div>
-        </div>
+  <div class="letter-container">
+    <div class="header">
+      <div class="sender-info">
+        <h2 class="sender-name">{{ senderName }}</h2>
+        <p class="sender-address">{{ senderAddress }}</p>
+        <p class="sender-phone">{{ senderPhone }}</p>
+        <p class="sender-email">{{ senderEmail }}</p>
       </div>
+      <div class="date">{{ formattedDate }}</div>
+    </div>
+    <div class="recipient-info">
+      <label for="recipient-name">Nom du destinataire : </label>
+      <input type="text" id="recipient-name" v-model="recipientName">
+      <label for="recipient-address">Adresse du destinataire : </label>
+      <input type="text" id="recipient-address" v-model="recipientAddress">
+    </div>
+    <div class="subject">
+      <label for="subject">Objet : </label>
+      <input type="text" id="subject" v-model="subject">
+    </div>
+    <div class="content" id="editor">
+      <editor-content :editor="editor"  v-model="letterContent"/>
+    </div>
+    <div class="signature">
+      <p class="signature-name">{{ senderName }}</p>
     </div>
   </div>
+  <div class="actions">
+    <button @click="printLetter">Imprimer</button>
+    <button @click="saveLetter">Enregistrer</button>
+    <button @click="archiveLetter">Archiver</button>
+  </div>
+<ul class="list-group">
+  <li v-for="archivedLetter in archivedLetters" :key="archivedLetter.id" class="list-group-item">
+    <div class="d-flex justify-content-between">
+      <span>{{ archivedLetter.subject }}</span>
+      <div>
+        <button @click="openLetter(archivedLetter)" class="btn btn-sm btn-primary mr-2">Ouvrir</button>
+        <button @click="deleteLetter(archivedLetter.id)" class="btn btn-sm btn-danger">Supprimer</button>
+      </div>
+    </div>
+  </li>
+</ul>
+ 
 </template>
-
 <script>
-import html2pdf from 'html2pdf.js';
-
-export default {
-  name: 'LetterGenerator',
+import StarterKit from '@tiptap/starter-kit';
+import { EditorContent, useEditor } from '@tiptap/vue-3';
+export default{
+  components: {
+    EditorContent,
+  },
   data() {
     return {
-      formData: {
-        recipientName: '',
-        recipientAddress: '',
-        senderName: '',
-        senderAddress: '',
-        letterContent: '',
-      },
-      generatedLetter: null,
+      letterContent: '',
+      senderName: 'wangue sonfack wilfried pavel',
+      senderAddress: 'bini-dang',
+      senderPhone: '699227921',
+      senderEmail: 'wanguepavel52@gmail.com',
+      recipientName: '',
+      recipientAddress: '',
+      subject: '',
+      archivedLetters: [],
     };
   },
-  methods: {
-    generateLetter(event) {
-      event.preventDefault();
-      const { recipientName, recipientAddress, senderName, senderAddress, letterContent } = this.formData;
-      const letter = `
-        Dear ${recipientName},
-
-        ${letterContent}
-
-        Sincerely,
-        ${senderName}
-        ${senderAddress}
-      `;
-      this.generatedLetter = letter;
-    },
-    saveAsPDF() {
-      const element = this.$refs.letterContainer;
-      const opt = {
-        margin: 1,
-        filename:` ${recipientName} `.pdf,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
-      };
-
-      html2pdf().set(opt).from(element).save();
-    },
-    archiveLetter() {
-      const archivedLettersArray = JSON.parse(localStorage.getItem('archivedLetters'))?? [];
-      archivedLettersArray.push(this.formData);
-
-      localStorage.setItem('archivedLetters', JSON.stringify(archivedLettersArray));
+  setup() {
+    const editor = useEditor({
+      content :'<p>bonjour</p>',
+      extensions: [
+        StarterKit,
+      ],
+    })
+    return {
+      editor
+    };
+  },
+  computed: {
+    formattedDate() {
+      const date = new Date();
+      return date.toLocaleDateString('fr-FR', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      });
     },
   },
+  methods: {
+    printLetter() {
+      window.print();
+    },
+    saveLetter() {
+      const newLetter = {
+        id: Date.now(),
+        subject: this.subject,
+        content: this.letterContent,
+        recipientName: this.recipientName,
+        recipientAddress: this.recipientAddress,
+      };
+      this.archivedLetters.push(newLetter);
+      localStorage.setItem('archivedLetters', JSON.stringify(this.archivedLetters));
+      this.letterContent = '';
+      this.recipientName = '';
+      this.recipientAddress = '';
+      this.subject = '';
+    },
+    archiveLetter() {
+      this.saveLetter();
+    },
+    openLetter(letter) {
+      this.letterContent = letter.content;
+      this.recipientName = letter.recipientName;
+      this.recipientAddress = letter.recipientAddress;
+      this.subject = letter.subject;
+    },
+    deleteLetter(id) {
+      this.archivedLetters = this.archivedLetters.filter(
+        (letter) => letter.id !== id
+      );
+      localStorage.setItem('archivedLetters', JSON.stringify(this.archivedLetters));
+    },
+  },
+  mounted() {
+    const storedLetters = localStorage.getItem('archivedLetters');
+    if (storedLetters) {
+      this.archivedLetters = JSON.parse(storedLetters);
+    }
+  },
+
 };
 </script>
 <style scoped>
+/* Styles for the letter */
 .letter-container {
-  /*... existing styles... */
-  position: relative;
-  padding: 40px;
-  border: 1px solid #ccc;
-  background-color: #fff;
   font-family: Arial, sans-serif;
-}
-
-.letter-container h2 {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.letter-container p {
-  line-height: 1.6;
-}
-
-.letter-container.logo {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  width: 100px;
-  height: 100px;
-  background-image: url('path/to/your/logo.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-}
-
-.letter-container.signature {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  width: 200px;
-  height: 50px;
-  border-bottom: 1px solid #ccc;
-}
-
-.letter-container.text-right {
-  margin-top: 20px;
-}
-.letter-container {
-  border: 1px solid #ccc;
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 20px auto;
+  max-width: 700px;
   padding: 20px;
-  background-color: #fff;
-  font-family: Arial, sans-serif;
+  border: 1px solid #ddd;
 }
-
-.letter-container h2 {
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.sender-info,
+.recipient-info {
+  text-align: left;
+}
+.subject {
   text-align: center;
   margin-bottom: 20px;
 }
-
-.letter-container p {
-  line-height: 1.6;
+.content {
+  margin-bottom: 20px;
 }
-
-.letter-container.text-right {
+.signature {
+  text-align: right;
   margin-top: 20px;
+}
+.signature-name {
+  font-weight: bold;
+}
+/* Styles for the input fields */
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  box-sizing: border-box;
+}
+/* Styles for the buttons */
+.actions button {
+  padding: 8px 16px;
+  margin-right: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+/* Styles for the list of archived letters */
+ul {
+  list-style: none;
+  padding: 0;
+}
+li {
+  margin-bottom: 10px;
+}
+/* Styles for the rich text editor (Tiptap) */
+.ProseMirror {
+  /* Add some CSS properties here, for example: */
+  border: 1px solid #ddd;
+  padding: 10px;
+}
+@media print {
+  body > *:not(.letter-container) {
+    display: none;
+  }
+ 
 }
 </style>
