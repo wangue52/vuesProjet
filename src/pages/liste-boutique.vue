@@ -1,8 +1,10 @@
 <script setup>
 import axios from '@/axios';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { computed, ref } from 'vue';
 import { useTheme } from 'vuetify';
-
+import { utils, writeFile } from 'xlsx';
 const { global } = useTheme()
 const search = ref('');
 const stores = ref([]) ;
@@ -113,7 +115,40 @@ const save = () => {
       })
   }
   close()
-}
+};
+const exportToPdf=() =>{
+      const boutique =  stores.value;
+      const doc = new jsPDF();
+      doc.text('liste des boutiques de la communes urbaines de ngaoundere', 10, 10);
+      autoTable(doc, {
+        head: [['ID', 'Name', 'Matricule', 'Bloc_ID', 'City', 'District', 'Longitude', 'Latitude', 'Status']],
+        body: boutique.map(store => [store.id, store.name, store.matricule, store.bloc_id, store.city, store.district, store.longitude, store.latitude, store.status]),
+        });
+      const pdfBuffer = doc.output('blob');
+      const data = new Blob([pdfBuffer], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(data);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'store.pdf';
+      a.click();
+    };
+const exportToExcel=()=> {
+      axios.get('/stores')
+        .then(response => {
+           const jsondata = response.data.data;
+           try {
+    const worksheet = utils.json_to_sheet(jsondata);
+    const workbook = utils.book_new();
+    workbook.SheetNames.push('shops');
+    workbook.Sheets['shops']=worksheet ;
+    writeFile(workbook, 'shops.xlsx');
+    } catch (error) {
+    console.error('An error occurred while exporting the data to Excel:', error);
+    alert('An error occurred while exporting the data to Excel. Please try again later.');
+     }
+        }) ;
+   
+    }
 
 </script>
 <template>
@@ -135,6 +170,8 @@ const save = () => {
             <v-btn class="mb-2" color="primary" dark v-bind="props">
               nouvelle boutique
             </v-btn>
+            <button class="btn btn-success" @click="exportToExcel">Exporter en Excel</button>
+            <button class="btn btn-danger" @click="exportToPdf">Exporter en PDF</button>
           </template>
           <v-card>
             <v-card-title>

@@ -3,6 +3,8 @@
     <h1>Gestion des Blocs</h1>
     <div class="mb-3">
       <button class="btn btn-primary" @click="showCreateModal = true">Ajouter un bloc</button>
+      <button class="btn btn-success" @click="exportToExcel">Exporter en Excel</button>
+    <button class="btn btn-danger" @click="exportToPdf">Exporter en PDF</button>
     </div>
     <table class="table table-striped">
       <thead>
@@ -25,65 +27,20 @@
         </tr>
       </tbody>
     </table>
-    <!-- Create Bloc Modal
-    <div class="modal fade" id="createBlocModal" :class="{ show: showCreateModal }" tabindex="-1" aria-labelledby="createBlocModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="createBlocModalLabel">Ajouter un bloc</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form @submit.prevent="createBloc">
-              <div class="mb-3">
-                <label for="name" class="form-label">Nom du bloc</label>
-                <input type="text" class="form-control" id="name" v-model="newBloc.name" required>
-              </div>
-              <div class="mb-3">
-                <label for="number_shop" class="form-label">Nombre de magasins</label>
-                <input type="number" class="form-control" id="number_shop" v-model.number="newBloc.number_shop" required>
-              </div>
-              <button type="submit" class="btn btn-primary">Créer</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div> -->
-    <!-- Edit Bloc Modal -->
-    <!-- <div class="modal fade" id="editBlocModal" :class="{ show: showEditModal }" tabindex="-1" aria-labelledby="editBlocModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="editBlocModalLabel">Modifier un bloc</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form @submit.prevent="updateBloc">
-              <div class="mb-3">
-                <label for="name" class="form-label">Nom du bloc</label>
-                <input type="text" class="form-control" id="name" v-model="selectedBloc.name" required>
-              </div>
-              <div class="mb-3">
-                <label for="number_shop" class="form-label">Nombre de magasins</label>
-                <input type="number" class="form-control" id="number_shop" v-model.number="selectedBloc.number_shop" required>
-              </div>
-              <button type="submit" class="btn btn-primary">Enregistrer</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div> -->
   </div>
 </template>
 <script>
 import axios from '@/axios';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import { utils, writeFile } from 'xlsx';
 export default {
   data() {
     return {
       blocs: [],
       newBloc: {
         name: '',
-        number_shop: 0
+        number_shop: 0 
       },
       selectedBloc: {},
       showCreateModal: false,
@@ -145,7 +102,41 @@ export default {
             console.error('Erreur lors de la suppression du bloc:', error);
           });
       }
-    }
+    },
+    exportToExcel() {
+      axios.get('/blocs')
+        .then(response => {
+           const jsondata = response.data;
+           try {
+    const worksheet = utils.json_to_sheet(jsondata);
+    const workbook = utils.book_new();
+    workbook.SheetNames.push('Blocks');
+    workbook.Sheets['Blocks']=worksheet ;
+    writeFile(workbook, 'Blocks.xlsx');
+    } catch (error) {
+    console.error('An error occurred while exporting the data to Excel:', error);
+    alert('An error occurred while exporting the data to Excel. Please try again later.');
+     }
+        }) ;
+   
+    },
+    
+    exportToPdf() {
+      const blocs = this.blocs;
+      const doc = new jsPDF();
+      doc.text('Blocks', 10, 10);
+      autoTable(doc, {
+        head: [['ID', 'nom', 'Numbre de boutique']],
+        body: blocs.map(bloc => [bloc.id, bloc.name, bloc.number_shop]),
+          });
+      const pdfBuffer = doc.output('blob');
+      const data = new Blob([pdfBuffer], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(data);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'blocks.pdf';
+      a.click();
+    },
   }
 };
 </script>

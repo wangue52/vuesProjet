@@ -77,10 +77,14 @@
 
 <script>
 import axios from '@/axios';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { ref } from 'vue';
 export default {
   data() {
     return {
+      locationData:ref([]),
+      imageUrl:'',
       form: {
         client_name: '',
         store_matricule: '',
@@ -181,15 +185,51 @@ export default {
           console.error('Erreur lors de la génération du QR Code :', error);
         });
     },
-    generatePDF(id) {
-      axios.get(`/rentals/pdf/${id}`)
-        .then(response => {
-          // Afficher le QR Code à l'utilisateur
-          // window.open(response.data.qrcode_url, '_blank');
-        })
-        .catch(error => {
-          console.error('Erreur lors de la génération du PDF :', error);
+  async generatePDF(id) {
+    try {
+  const qrcodeResponse = await axios.get(`/rentals/qrcode/${id}`);
+            this.imageUrl=qrcodeResponse.data.qrcode_url;
+    
+   
+     const locationResponse = await axios.get(`/rentals/${id}`);
+     const locationData=[locationResponse.data] ;
+      const boutique=locationData
+      let pavel=boutique.map(store => [ store.client_name]);
+     const company={
+      nom :'commune urbaine de bali',
+      logo :'@images/avatars/avatar-1.png',
+      address :'bini-dang',
+      telephone:'699227921',
+      email:'communedouala@gmail.com',
+
+     };
+    const doc= new jsPDF() ;
+    // doc.addImage(company.logo,'png',10, 10, 50,20);
+    doc.setFontSize(16);
+    doc.text(company.nom,1,10);
+    doc.setFontSize(12);
+    doc.text(company.address,1,30);
+    doc.text(company.telephone,1,20);
+    doc.text(company.email,1,40);
+    doc.setFontSize(20);
+     doc.addImage(this.imageUrl,'png',180,10,30,30);
+      autoTable(doc, {
+         startY:120,
+        theme:'grid',
+        head: [['nom du client/cliente','matricule de la boutique', 'nom de la boutique','periode de location en mois', 'date de location', 'prix de location en cfa']],
+        body: boutique.map(store => [ store.client_name,store.store_matricule, store.store_name, store.period_location, store.rental_date, store.price_store]),
         });
+      const pdfBuffer = doc.output('blob');
+      const data = new Blob([pdfBuffer], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(data);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${pavel}.pdf`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+     } catch (error) {
+      console.error('Erreur lors de la génération du PDF :', error);
+    }
     },
     resetForm() {
       this.form = {
@@ -205,4 +245,22 @@ export default {
   },
 };
 </script>
+
+<!-- const tableaux=[
+      { '' :'details du contrats de location ' 
+
+      },
+      { '' :matricule de la boutique: ${locationData.store_matricule}
+
+      },
+      { '' :nom de la boutique: ${locationData.store_name}
+
+      },
+      { '' :matricule de la boutique: ${locationData.store_address}
+
+      },
+      { '' : prix du loyer: ${locationData.price_store} francs cfa
+
+      }, -->
+      <!-- a.download = `${boutique.store_name}.pdf`; -->
 

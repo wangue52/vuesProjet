@@ -27,6 +27,8 @@
     "axios": "^1.7.2",
     "html2pdf.js": "^0.10.1",
     "js-file-download": "^0.4.12",
+    "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.8.2",
     "leaflet": "^1.9.4",
     "leaflet-routing-machine": "^3.2.12",
     "leaflet.markercluster": "^1.5.3",
@@ -44,7 +46,8 @@
     "vue3-apexcharts": "^1.4.4",
     "vue3-perfect-scrollbar": "^1.6.1",
     "vuetify": "3.4.9",
-    "webfontloader": "^1.6.28"
+    "webfontloader": "^1.6.28",
+    "xlsx": "^0.17.4"
   },
   "devDependencies": {
     "@antfu/eslint-config-vue": "^0.43.1",
